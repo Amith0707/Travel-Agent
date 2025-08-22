@@ -76,8 +76,8 @@ def build_graph()->CompiledStateGraph:
 
     logger.info("Edges Created..")
     print("Edges Created..")
-
-    return workflow.compile()
+    app=workflow.compile()
+    return app
 
 def mermaid_png(graph:CompiledStateGraph):
     """Function to generate the workflow graph"""
