@@ -8,6 +8,7 @@ from datetime import datetime
 from graph.nodes import get_user_input
 from graph.state import TravelState
 from graph.workflow import build_graph
+from langgraph.graph import START
 
 st.set_page_config(page_title="AI Travel Agent", page_icon="🌍", layout="wide")
 
@@ -36,28 +37,30 @@ if submitted:
         "start_date": str(start_date),
         "end_date": str(end_date),
         "hotel_budget": hotel_budget,
-        "travel_budget":travel_budget
+        "travel_budget": travel_budget
     }
 
-
-    st.write(" Collected Inputs:", user_inputs)
+    st.write("Collected Inputs:", user_inputs)
     logger.info("Collected User input..")
-    print("Collected User input..")
     
-    state:TravelState=TravelState()
-    state["user_input"]=user_inputs
+    # Create initial state
+    initial_state = {
+        "user_input": user_inputs
+    }
 
-    logger.info("Initalizing and compiling the Graph...")
-    logger.error("Initalizing and compiling the Graph...")
+    logger.info("Initializing and compiling the Graph...")
     
-    workflow=build_graph()# Returns a compiled stategraph (workflow.compile())
+    workflow = build_graph()
     logger.info("Compiled the graph successfully..")
-    print("Compiled the graph successfully..")
 
     logger.info("Running the graph now.....")
-    print("Running the graph now.....")
-    # workflow.run(state) doesnt work as CompiledStateGraph doesnt has this method
-    final_state=workflow.execute("START",state)
-    st.write("Final Travel State:", final_state)
-    st.write("Supervisor decided next node:", final_state.get("next_node"))
-    logger.info(f"Supervisor routed to: {final_state.get('next_node')}")    
+    
+    try:
+        # Use invoke instead of execute
+        final_state = workflow.invoke(initial_state)
+        st.write("Final Travel State:", final_state)
+        st.write("Completed workflow successfully!")
+        
+    except Exception as e:
+        st.error(f"Error during workflow execution: {e}")
+        logger.error(f"Workflow execution error: {e}")

@@ -25,6 +25,8 @@ def get_user_input(state:TravelState)->TravelState:
         Finally plan an entire itenerary for the entire duration of travel and make sure to keep the trip affordable within my Travel budget which is:{user_input.get("travel_budget")} and show me the estimated cost in the destination currency.'''
 
         #updating query key in TravelState
+        print("\n Query is:",query)
+        print("****************Exiting Node********************")
         state["query"]=query
 
         return state

@@ -30,10 +30,12 @@ except Exception as e:
     logger.error("Error occured in Supervisor.py",e)
 ####################################################################
 # Brain of my workflow 
-def decide_next_node(state:TravelState)->TravelState:
+def decide_next_node(state:TravelState)->str:
     try:
             
         """Decides which node to call next in the flow based on TravelState data it has."""
+        print("Entered decide_next_node in supervisor.py")
+        logger.info("Entered decide_next_node in supervisor.py")
         # Step 1 is to take the user input
         query=state.get("query","") # ""->means returns empty string if query is empty
         response=chain.invoke({"user_input":query})
