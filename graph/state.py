@@ -5,6 +5,7 @@
 from typing import TypedDict,List,Dict
 
 class TravelState(TypedDict,total=False):
+    query:str
     user_input:Dict
     attractions:List[str]
     weather:Dict
@@ -15,3 +16,5 @@ class TravelState(TypedDict,total=False):
     converted_curreny:Dict
     expenses:Dict
     summary:str
+    feedback:str
+    next_node:str #->decides which node to call next
