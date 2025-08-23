@@ -90,3 +90,7 @@ def mermaid_png(graph:CompiledStateGraph):
 
     logger.info(f"Saved the Graph IMage at {filename}")
     print(f"Saved the Graph IMage at {filename}")
+
+# if __name__=="__main__":
+#     res=build_graph()
+#     mermaid_png(res)
