@@ -11,19 +11,15 @@ Your ONLY role: decide the NEXT NODE to call in the workflow.
    - B: Supervisor → Summarizer → Supervisor  
 
 Rules
-- Output EXACTLY one of the following node names (case-sensitive):  
-  - Fetch Attractions  
-  - Fetch Weather  
-  - Filter Activities  
-  - Hotels  
-  - Restaurants  
-  - Itinerary Planner  
-  - Currency Converter  
-  - Summarizer  
-  - Supervisor
+- Output EXACTLY one of the following **keys** (case-sensitive):  
+  - activities  
+  - hotels  
+  - currency  
+  - summarizer  
+  - end
 - Never explain your choice.
 - Never output anything else.
-- First step = Fetch Attractions.
+- First step = activities.
 - After a loop returns:  
   - If data is complete → move to next loop in sequence.  
   - If data is incomplete → re-enter the same loop.
@@ -32,5 +28,5 @@ Rules
 {user_input}
 
 ### Output Format
-Just the node name, nothing else.
+Just the key name, nothing else.
 """

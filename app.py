@@ -23,8 +23,8 @@ with st.form("user_inputs"):
         start_date = st.date_input("Travel Start Date", min_value=datetime.today())
         end_date = st.date_input("Travel End Date", min_value=datetime.today())
     
-    hotel_budget = st.number_input("Hotel Budget per Night (in your currency)", min_value=100, step=50)
-    travel_budget = st.number_input("Maximum Budget of your trip(in your currency)", min_value=10000, step=50)
+    hotel_budget = st.number_input("Hotel Budget per Night (in your currency)", min_value=10000, step=50)# Change it later
+    travel_budget = st.number_input("Maximum Budget of your trip(in your currency)", min_value=100000, step=50)
     
     submitted = st.form_submit_button("Plan My Trip 🚀")
 
@@ -57,7 +57,8 @@ if submitted:
     
     try:
         # Use invoke instead of execute
-        final_state = workflow.invoke(initial_state)
+        updated_state=get_user_input(initial_state)
+        final_state = workflow.invoke(updated_state)#-->now goes to supervisor
         st.write("Final Travel State:", final_state)
         st.write("Completed workflow successfully!")
         

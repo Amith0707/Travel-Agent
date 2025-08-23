@@ -30,7 +30,7 @@ except Exception as e:
     logger.error("Error occured in Supervisor.py",e)
 ####################################################################
 # Brain of my workflow 
-def decide_next_node(state:TravelState)->str:
+def decide_next_node(state:TravelState)->TravelState:
     try:
             
         """Decides which node to call next in the flow based on TravelState data it has."""
@@ -48,18 +48,14 @@ def decide_next_node(state:TravelState)->str:
         logger.info(f"Supervisor routed to: {next_node}")
 
         # For safety
-        VALID_NODES = [
-            "User Input", "Supervisor","Fetch Attractions", "Fetch Weather", 
-            "Filter Activities","Hotels", "Restaurants", "Itinerary Planner", 
-            "Currency Converter","Summarizer"
-        ]
+        VALID_KEYS = ["activities", "hotels", "currency", "summarizer", "end"]
 
-        if next_node not in VALID_NODES:
+        if next_node not in VALID_KEYS:
             next_node = "error"
         
         #Updating the next_node
         state["next_node"]=next_node
-
+        logger.info(f"Supervisor routed to key: {next_node}")
         return state
 
     except Exception as e:
