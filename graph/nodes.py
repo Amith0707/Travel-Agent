@@ -4,6 +4,7 @@ from utils.logger import setup_logger
 logger=setup_logger()
 from modules.supervisor import decide_next_node # Supervisor Node
 from modules.attractions import get_attractions #seper call to get attractions
+from modules.weather import get_weather_forecast
 
 def get_user_input(state:TravelState)->TravelState:
     try:
@@ -60,13 +61,70 @@ def fetch_attractions(state:TravelState)->TravelState:
     except Exception as e:
         logger.error("Error occured in fetch_attractions in node.py",e)
 
-def fetch_weather_data(state):
+def fetch_weather_data(state:TravelState)->TravelState:
+    '''
+    This Node is used to fetch real time weather data...'''
     print("="*50)
-    print("ENtered weather node")
+    logger.info("ENtered weather node")
+    try:
+        # retrieving the dates
+        destination=state.get("user_input").get("destination_city")
+        from_date=state.get("user_input").get("start_date")
+        end_date=state.get("user_input").get("end_date")
+        #Calling the weather Modules
+        weather_data=get_weather_forecast(destination,from_date,end_date)
+        #updating the state
+        state["weather"]=weather_data #need to fix the state or input
+        logger.info("Weather Data updated Successfully in state...")
 
-def filter_attractions(state):
-    print("="*50)
-    print("ENtered Filter Attractions node")
+        return state
+    except Exception as e:
+        logger.error(f"Error in fetch_weather_data..{e}")
+
+def filter_attractions(state: TravelState) -> TravelState:
+    """
+    Filters attractions based on simple weather rules.
+    Example: if rain is likely, skip outdoor-heavy attractions.
+    """
+    print("=" * 50)
+    logger.info("Entered filter_attractions node")
+
+    try:
+        attractions = state.get("attractions", [])
+        weather_data = state.get("weather", {})
+
+        if not attractions:
+            logger.warning("No attractions found in state!")
+            return state
+        if not weather_data:
+            logger.warning("No weather data found in state!")
+            return state
+
+        # Rule: if rain probability > 50% on any trip day, avoid outdoor/park attractions
+        rainy = any(
+            day.get("rain_prob", 0) > 50 or "rain" in day.get("condition", "").lower()
+            for day in weather_data.values()
+        )#--->this is correct 
+
+        filtered = []
+        for attr in attractions:
+            title = attr.get("title", "").lower()
+            category = attr.get("category", "").lower()
+
+            if rainy and ("park" in title or "garden" in category or "outdoor" in category):
+                # so basically if it's rainy that day and tourist spot is a park garden or any outdoor we skipppp
+                logger.info(f"Skipping {attr.get('title')} due to rain forecast")
+                continue
+
+            filtered.append(attr)
+
+        state["filtered_attractions"] = filtered
+        logger.info(f"Filtered {len(filtered)} attractions (out of {len(attractions)})")
+        return state
+
+    except Exception as e:
+        logger.error(f"Error in filter_attractions node: {e}")
+        return state
 
 
 def fetch_hotels(state):

@@ -47,7 +47,7 @@ def get_attractions(destination:str,top_n:int =10)->List[Dict]: # default 10
             attractions_list.append(attraction)
 
         logger.info(f"Fetched {len(attractions_list)} attractions for {destination} successfully")
-
+        print(attractions_list) #bas dekhna haii-->
         return attractions_list
 
 
