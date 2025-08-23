@@ -21,9 +21,7 @@ def build_graph()->CompiledStateGraph:
     print("Creating Nodes..")
     # Adding Nodes
     workflow.add_node("User Input",nodes.get_user_input)
-
     workflow.add_node("Supervisor",nodes.supervisor_route)
-
     workflow.add_node("Fetch Attractions",nodes.fetch_attractions)
     workflow.add_node("Fetch Weather",nodes.fetch_weather_data)
     workflow.add_node("Filter Activities",nodes.filter_attractions)
@@ -49,7 +47,7 @@ def build_graph()->CompiledStateGraph:
     # Conditional routing from Supervisor
     workflow.add_conditional_edges(
         "Supervisor",
-        nodes.supervisor_route,  # this must return a key like "activities", "hotels"
+        lambda state:state.get("next_node","end"),  # this must return a key like "activities", "hotels"
         {
             "activities": "Fetch Attractions",
             "hotels": "Hotels",

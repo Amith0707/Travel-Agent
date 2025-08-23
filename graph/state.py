@@ -7,7 +7,7 @@ from typing import TypedDict,List,Dict
 class TravelState(TypedDict,total=False):
     query:str
     user_input:Dict
-    attractions:List[str]
+    attractions:List[Dict] #-->serper gives output in json
     weather:Dict
     filtered_attractions:List[str]
     hotels:List[Dict]
