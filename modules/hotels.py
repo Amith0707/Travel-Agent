@@ -38,5 +38,6 @@ def search_hotels(destination_city: str, budget: float, check_in: str = None, ch
             "phone": hotel.get("phoneNumber"),
             "website": hotel.get("website"),
         })
+    # incrementing the loop count
     
     return hotels_list

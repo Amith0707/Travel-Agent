@@ -40,9 +40,11 @@ def decide_next_node(state: TravelState) -> TravelState:
         snapshot = {
             "filtered_attractions": state.get("filtered_attractions", []),
             "itinerary": state.get("itinerary", []),
-            "summary": state.get("summary", "")
+            "hotels": state.get("hotels", []),
+            "restaurants": state.get("restaurants", []),
+            "summary": state.get("summary", ""),
+            "hotel_loop_count": state.get("hotel_loop_count", 0)
         }
-
         # Send snapshot + query into the LLM
         response = chain.invoke({
             "user_input": query,
@@ -62,6 +64,16 @@ def decide_next_node(state: TravelState) -> TravelState:
 
         # Step 3: Update state
         state["next_node"] = next_node
+        # Force hotel to appear only once
+        hotel_count = state.get("hotel_loop_count", 0)
+        if next_node == "hotels":
+            if hotel_count >= 1:           # already visited once
+                state["next_node"] = "currency"  # force next
+            else:
+                state["hotel_loop_count"] = hotel_count + 1
+        else:
+            state["hotel_loop_count"] = 0   # reset if moving out of hotels
+
         return state
 
     except Exception as e:
