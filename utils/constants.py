@@ -46,3 +46,29 @@ Current state snapshot:{snapshot}
 ### Output Format
 Just the key name, nothing else.
 """
+ITNERARY_TEMPLATE='''
+You are a travel assistant. Based on the following information, generate a day-wise itinerary in simple list format.
+
+User Input:
+{user_input}
+
+Hotels:
+{hotels}
+
+Restaurants:
+{restaurants}
+
+Attractions:
+{attractions}
+
+Weather forecast:
+{weather}
+
+Requirements:
+- Include 1-3 attractions per day depending on number of travel days
+- Suggest meal/rest breaks using restaurants
+- Include hotel check-in/out references if needed
+- Return ONLY a list of daily itinerary steps (do NOT repeat budget or hotel options)
+- Do NOT include markdown headers (### or ####), only plain text steps
+- Return as a list of strings, one step per line
+'''
