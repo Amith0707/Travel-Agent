@@ -58,7 +58,7 @@ if submitted:
     try:
         # Use invoke instead of execute
         updated_state=get_user_input(initial_state)
-        final_state = workflow.invoke(updated_state)#-->now goes to supervisor
+        final_state = workflow.invoke(updated_state,{"recursion_limit":20})#-->now goes to supervisor
         st.write("Final Travel State:", final_state)
         st.write("Completed workflow successfully!")
         

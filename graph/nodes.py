@@ -2,13 +2,20 @@
 from .state import TravelState
 from utils.logger import setup_logger
 logger=setup_logger()
+from dotenv import load_dotenv
+import os
+api_key=os.getenv("OPENAI_API_KEY")
+from utils.constants import OPENAI_MODEL,SUMMARIZER_TEMPLATE
+model_name=OPENAI_MODEL
+from langchain_openai import ChatOpenAI
+from langchain.prompts import PromptTemplate
 from modules.supervisor import decide_next_node # Supervisor Node
 from modules.attractions import get_attractions #seper call to get attractions
 from modules.weather import get_weather_forecast
 from modules.hotels import search_hotels
 from modules.restaurants import search_restaurants
 from modules.itinearary import create_itinerary
-
+from modules.currency import detect_currency
 def get_user_input(state:TravelState)->TravelState:
     try:
         '''Node to clean user input and format it into a nice query'''
@@ -174,14 +181,35 @@ def generate_itinerary(state:TravelState)->TravelState:
     return state
 
 
-def currency_conversion(state):
+def currency_conversion(state:TravelState)->TravelState:
     print("="*50)
     print("Entered Currency COnversion Node")
-
-def calculate_expenses(state):
+    logger.info("Entered Currency COnversion Node")
+    updated_state=detect_currency(state)
     print("="*50)
-    print("Entered Currency Conversion Node")
+    logger.info("Currency COnversion completed heading to next node...")
+    print("="*50)
+    return updated_state
 
-def summarize(state):
+def summarize(state:TravelState)->TravelState:
     print("="*50)
     print("Entered Summarizer Node")
+    llm=ChatOpenAI(api_key=api_key,model=model_name)
+    prompt = PromptTemplate(
+        template=SUMMARIZER_TEMPLATE,
+        input_variables=["travel_state"]
+    )
+    chain = prompt | llm
+    res = chain.invoke({"travel_state": str(state)})
+    print("*"*50)
+    print("SUMMARY \n",res.content)
+    print("*"*50)
+    logger.info("Summary Generated Successfully")
+    state["summary"]=res.content
+
+    # Saving State
+    res=state
+    import json
+    with open(r'artifacts/state.txt','w') as f:
+        f.write(json.dumps(res,indent=4))
+    return state

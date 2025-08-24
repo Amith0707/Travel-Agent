@@ -55,7 +55,7 @@ def create_itinerary(state: TravelState) -> List[str]: #itinerary:List[str]
     print("="*50)
     print("RESPONSE: \n",response.content)
     # extracting text from the response
-    response_text = response.content if hasattr(response, "content") else str(response)
+    response_text = response.content if hasattr(response, "content") else str(response) #hasattr(object, attribute) (hasattr)-->means has attributes in an object or no
     # Split by line to get list of itinerary steps
     itinerary = [line.strip() for line in response_text.split("\n") if line.strip()]
     print("="*50)

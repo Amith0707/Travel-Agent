@@ -52,8 +52,8 @@ def build_graph()->CompiledStateGraph:
             "activities": "Fetch Attractions",
             "hotels": "Hotels",
             "currency": "Currency Converter",
-            "summarizer": "Summarizer",
-            "end": END,
+            "summarizer": "Summarizer"
+            # "end": END,
         }
     )
 
@@ -69,7 +69,7 @@ def build_graph()->CompiledStateGraph:
 
     # Currency branch
     workflow.add_edge("Currency Converter", "Summarizer")
-    workflow.add_edge("Summarizer", "Supervisor")
+    workflow.add_edge("Summarizer",END)
 
 
     logger.info("Edges Created..")

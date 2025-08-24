@@ -12,12 +12,16 @@ Your ONLY role: decide the NEXT NODE to call in the workflow.
 
 2. Hotels Loop:
    - Sequence: Supervisor → Hotels → Restaurants → Itinerary Planner → Supervisor
-   - Rule: If itinerary is missing/incomplete, return "hotels".
-   - Else, proceed to the currency decision step.
+   - Rule: 
+     - You can enter only once if in snapshot if hotel_loop_count is 1 then you'll never enter again
+     - If itinerary is missing from snapshot, return "hotels".
+     - Else, if hotels or restaurants are missing/empty from snapshot, return "hotels".
+     - Else, proceed to the currency decision step.
+
 
 3. Currency Decision:
    - After hotels loop completes:
-     - If a currency conversion is required (expenses not in user’s native currency), return "currency".
+     - If a currency conversion is required (expenses not in users native currency), return "currency".
      - If itinerary is already sufficient, skip currency and return "summarizer".
 
 4. Summarizer Loop:
@@ -71,4 +75,36 @@ Requirements:
 - Return ONLY a list of daily itinerary steps (do NOT repeat budget or hotel options)
 - Do NOT include markdown headers (### or ####), only plain text steps
 - Return as a list of strings, one step per line
+'''
+
+# Prompt template to detect currencies
+CURRENCY_DETECT_TEMPLATE = """
+You are a travel assistant AI. Given the following information, identify the currencies
+used in the origin and destination cities.
+
+Current city: {current_city}
+Destination city: {destination_city}
+
+Return the result as a JSON dict exactly in this format:
+{{"from_currency": "XXX", "to_currency": "YYY"}}
+
+eg..
+Current city:Chennai
+Destination City: New York
+{{"from_currency": "INR", "to_currency": "USD"}}
+"""
+
+SUMMARIZER_TEMPLATE='''
+You are a travel assistant. You have the full travel plan below:
+
+{travel_state}
+
+Generate a concise and friendly summary for the user. Include:
+- Top attractions (if available)
+- Key itinerary highlights
+- Hotel options
+- Estimated expenses
+- Any weather considerations
+- Also make sure to generate expected expenses and show detailed calculations with respect to current conversion rate
+Format it nicely so it can be displayed in a Streamlit app.
 '''
