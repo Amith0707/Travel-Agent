@@ -5,6 +5,9 @@ logger=setup_logger()
 from modules.supervisor import decide_next_node # Supervisor Node
 from modules.attractions import get_attractions #seper call to get attractions
 from modules.weather import get_weather_forecast
+from modules.hotels import search_hotels
+from modules.restaurants import search_restaurants
+from modules.itinearary import create_itinerary
 
 def get_user_input(state:TravelState)->TravelState:
     try:
@@ -130,14 +133,46 @@ def filter_attractions(state: TravelState) -> TravelState:
 def fetch_hotels(state):
     print("="*50)
     print("ENtered fetch hotels node")
+    logger.info("ENtered fetch hotels node")
+    user_input = state.get("user_input", {})
+    destination_city = user_input.get("destination_city")
+    budget = user_input.get("hotel_budget")
+    check_in = user_input.get("start_date")
+    check_out = user_input.get("end_date")
+    hotels = search_hotels(destination_city, budget, check_in, check_out)
+    state["hotels"] = hotels
+    print(f"Found {len(hotels)} hotels for {destination_city}")
+    return state
 
 def fetch_restaurants(state):
     print("="*50)
     print("Entered Fetch Restaurants node")
+    logger.info("Entered Fetch Restaurants node")
+    user_input = state.get("user_input", {})
+    destination_city = user_input.get("destination_city")
+    cuisine = user_input.get("cuisine")  # Optional, can be None
 
-def generate_itinerary(state):
+    if not destination_city:
+        print("Missing destination city. Skipping restaurant search.")
+        state["restaurants"] = []
+        return state
+
+    restaurants = search_restaurants(destination_city, cuisine)
+    state["restaurants"] = restaurants
+
+    print(f"Found {len(restaurants)} restaurants in {destination_city}")
+    return state
+
+def generate_itinerary(state:TravelState)->TravelState:
     print("="*50)
-    print("Entered Generate Itinerary Node")
+    print("Entered Generate Itinerary Node in nodes.py")
+    res=create_itinerary(state)
+    print("="*50)
+    print("Itinerary Generated successfully and updating state")
+    # itinerary:List[str]
+    state["itinerary"]=res #updated here
+    return state
+
 
 def currency_conversion(state):
     print("="*50)

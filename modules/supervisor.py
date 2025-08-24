@@ -16,10 +16,10 @@ try:
     llm=ChatOpenAI(api_key=api_key,model=model,temperature=0)
 
     # Setting up the prompt
-    prompt=ChatPromptTemplate([#-->fully crct
-        ("system",TEMPLATE),
-        ("human","{user_input}")
-        ])
+    prompt = ChatPromptTemplate([
+        ("system", TEMPLATE),
+        ("human", "User query:\n{user_input}\n\nCurrent state snapshot:\n{snapshot}")
+    ])
     print("LLM Initalized Successfully")
     logger.info("LLM Initalized Successfully")
 
@@ -30,34 +30,42 @@ except Exception as e:
     logger.error("Error occured in Supervisor.py",e)
 ####################################################################
 # Brain of my workflow 
-def decide_next_node(state:TravelState)->TravelState:
+def decide_next_node(state: TravelState) -> TravelState:
     try:
-            
-        """Decides which node to call next in the flow based on TravelState data it has."""
         print("Entered decide_next_node in supervisor.py")
         logger.info("Entered decide_next_node in supervisor.py")
-        # Step 1 is to take the user input
-        query=state.get("query","") # ""->means returns empty string if query is empty
-        response=chain.invoke({"user_input":query})
-        print(response.content)
-        print("\n LLM Response Generated successfully..")
-        logger.info("LLM Response Generated successfully..")
 
-        next_node=response.content.strip()
+        # Step 1: Collect user query + minimal state snapshot
+        query = state.get("query", "")
+        snapshot = {
+            "filtered_attractions": state.get("filtered_attractions", []),
+            "itinerary": state.get("itinerary", []),
+            "summary": state.get("summary", "")
+        }
+
+        # Send snapshot + query into the LLM
+        response = chain.invoke({
+            "user_input": query,
+            "snapshot": snapshot
+        })
+
+        llm_output = response.content.strip()
+        print(f"LLM Raw Response: {llm_output}")
+        logger.info(f"LLM Raw Response: {llm_output}")
+
+        # Step 2: Parse and validate routing
+        VALID_KEYS = ["activities", "hotels", "currency", "summarizer", "end"]
+        next_node = llm_output if llm_output in VALID_KEYS else "error"
+
         print(f"Supervisor routed to: {next_node}")
         logger.info(f"Supervisor routed to: {next_node}")
 
-        # For safety
-        VALID_KEYS = ["activities", "hotels", "currency", "summarizer", "end"]
-
-        if next_node not in VALID_KEYS:
-            next_node = "error"
-        
-        #Updating the next_node
-        state["next_node"]=next_node
-        logger.info(f"Supervisor routed to key: {next_node}")
+        # Step 3: Update state
+        state["next_node"] = next_node
         return state
 
     except Exception as e:
-        print("Error in decide_next_node..")
-        logger.error("Error in decide_next_node..",e)
+        print("Error in decide_next_node..", e)
+        logger.error("Error in decide_next_node..", exc_info=True)
+        state["next_node"] = "error"
+        return state
