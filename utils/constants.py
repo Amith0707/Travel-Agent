@@ -106,5 +106,8 @@ Generate a concise and friendly summary for the user. Include:
 - Estimated expenses
 - Any weather considerations
 - Also make sure to generate expected expenses and show detailed calculations with respect to current conversion rate
-Format it nicely so it can be displayed in a Streamlit app.
+
+Format the output with plain text and simple newlines. 
+Do NOT use markdown code fences like ```markdown. 
+Use only headings (#, ##), bullet points (-), and bold **text**.
 '''

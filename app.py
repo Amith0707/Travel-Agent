@@ -9,7 +9,7 @@ from graph.nodes import get_user_input
 from graph.state import TravelState
 from graph.workflow import build_graph
 from langgraph.graph import START
-
+from utils.formatters import display_travel_state
 st.set_page_config(page_title="AI Travel Agent", page_icon="🌍", layout="wide")
 
 st.title("AI Travel Agent & Expense Planner")
@@ -40,7 +40,7 @@ if submitted:
         "travel_budget": travel_budget
     }
 
-    st.write("Collected Inputs:", user_inputs)
+    # st.write("Collected Inputs:", user_inputs)
     logger.info("Collected User input..")
     
     # Create initial state
@@ -59,9 +59,12 @@ if submitted:
         # Use invoke instead of execute
         updated_state=get_user_input(initial_state)
         final_state = workflow.invoke(updated_state,{"recursion_limit":20})#-->now goes to supervisor
-        st.write("Final Travel State:", final_state)
+        # st.write("Final Travel State:", final_state)
         st.write("Completed workflow successfully!")
+        display_travel_state("artifacts/state.txt")
         
     except Exception as e:
         st.error(f"Error during workflow execution: {e}")
         logger.error(f"Workflow execution error: {e}")
+
+
