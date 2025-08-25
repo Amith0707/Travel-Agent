@@ -17,6 +17,5 @@ class TravelState(TypedDict,total=False):
     to_currency:str
     exchange_value:float
     summary:str
-    feedback:str
     next_node:str #->decides which node to call next
     hotel_loop_count:int
