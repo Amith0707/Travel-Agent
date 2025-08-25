@@ -8,17 +8,21 @@ The system integrates multiple APIs for real-time data and provides an interacti
 
 ## Demo Screenshots  
 
+### Langgraph Workflow
+
+![Langgraph Workflow](utils/assets/graph.png)
+
 ### Streamlit Dashboard – Home Page  
-  
-![Streamlit Home](artifacts/assets/pic_2.png) 
+
+![Streamlit Home](utils/assets/pic_2.png) 
 
 ### Streamlit Dashboard – Output 
 
-![Streamlit Home](artifacts/assets/pic_3.png) 
+![Streamlit Home](utils/assets/pic_3.png) 
 
-![Streamlit Home](artifacts/assets/pic_4.png) 
+![Streamlit Home](utils/assets/pic_4.png) 
 
-![Streamlit Home](artifacts/assets/pic_5.png) 
+![Streamlit Home](utils/assets/pic_5.png) 
 
 ---
 
